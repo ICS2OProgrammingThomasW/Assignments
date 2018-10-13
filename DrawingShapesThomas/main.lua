@@ -43,7 +43,7 @@ pentogan.strokeWidth = 15
 pentogan:setStrokeColor( 3, 2, 1)
 
 -- set text over penogan and say "Pentogan"
-pentoganText = display.newText( "pentogan", 694, 700, Arial, textsizePentogan)
+pentoganText = display.newText( "pentogan", 625, 700, Arial, textsizePentogan)
 
 --set pentogan fill color 
 pentogan:setFillColor( 0.6, 0.4, 0.8)
@@ -65,7 +65,7 @@ quadrilateral.strokeWidth = 15
 quadrilateral:setStrokeColor( 0.1, 0.5, 0.3)
 
 -- set text over and say "Quadrilateral"
-quadrilateralText = display.newText ( "Quadrilateral", 750, 300, Arial, textsizeQuadrilateral)
+quadrilateralText = display.newText ( "Quadrilateral", 750, 317, Arial, textsizeQuadrilateral)
 
 -- set quadrilateral fill color
 quadrilateral:setFillColor(0.3, 0.9, 0.4)
