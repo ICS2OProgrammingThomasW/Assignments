@@ -7,22 +7,40 @@
 -- hide the status bar 
 display.setStatusBar(display.HiddenStatusBar)
 
--- global variables
 scrollSpeed = 3
 
---background image with width and height
-local backgroundImage = display.newImageRect("Images/space.jpg", 2048, 1536)
+local backgroundImage = display.newImageRect("Images/space.jpg", 2480, 1550)
 
--- character image with width and height
-local astronaut = display.newImageRect("Images/astronaut", 200, 200)
+print ("SPACE")
 
--- set the image to be transparent
-astronaut.alpha = 0
+-- create a local variable
+local textObject
 
--- set the initial x and y position of space 
-astronaut.x = 0
-astronaut.y = display.contentHeight/3
+-- set x,y locations of the text 
+textObject = display.newText("space", 650, 650, nil, 50)
 
--- function: MoveAstronaut
--- Input: this function accepts an event listener
--- output: none
+-- set the color of the text 
+textObject:setTextColor(157/255, 97/255, 213/255)
+
+-- add background with height and width
+local backgroundImage = display.newImageRect("Images/space.jpg", 2480, 1550)
+
+-- add background with height and width 
+local astronaut = display.newImageRect("Images/astronaut.png", 350, 400)
+
+local rocket2 = display.newImageRect("Images/rocket2.png", 350, 350)
+
+local satellite = display.newImageRect("Images/satellite.png", 350, 400)
+
+-- set the initial x and y positions of each image
+astronaut.x = 130
+astronaut.y = display.contentHeight/1.5
+
+rocket2.x = 900
+rocket2.y = display.contentWidth/2
+
+satellite.x = 450
+satellite.y = display.contentHeight/3
+
+
+
