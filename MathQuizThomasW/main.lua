@@ -20,6 +20,19 @@ local lives = 3
 local questionObject
 local x
 local points = 5
+local randomNumber1
+local randomNumber2 
+local randomNumber3 
+local randomNumber4 	
+local randomNumber5 
+local randomOperator
+
+
+
+
+
+
+
 --------------------------------------------------------------------
 -- SOUNDS
 --------------------------------------------------------------------
@@ -42,10 +55,11 @@ local wrongAnswerChannel
 
 ------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
-------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 
 local  function AskQuestion()
-	-- generate 2 random numbers between a max. and a min. number
+	--generate 2 random numbers between a max. and a min. number
+	
 	randomNumber1 = math.random(1,20)
 	randomNumber2 = math.random(1,20)
 	randomNumber3 = math.random(1,10)
@@ -56,27 +70,20 @@ local  function AskQuestion()
 
 	-- handle the case for addition
 	if (randomOperator == 1) then
-	 -- calculate the correct answer
-	   correctAnswer = randomNumber1 + randomNumber2 
-
-	 questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = " 
-
+		--calculate the correct answer
+	   	correctAnswer = randomNumber1 + randomNumber2 
+	 	questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = " 
 	elseif (randomOperator == 2 and (randomNumber1 > randomNumber2)) then
  		correctAnswer = randomNumber1 - randomNumber2 
-
 		questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = " 
-
 	elseif (randomOperator == 3 or randomOperator == 4) then
  		correctAnswer = randomNumber3 * randomNumber4
-
 	 	questionObject.text = randomNumber3 .. " * " .. randomNumber4 .. " = " 
-
-
 	elseif (randomOperator == 5 or randomOperator == 6) then
 		-- used from internet 
  		correctAnswer = math.floor(randomNumber5 / randomNumber6)
-
 	 	questionObject.text = randomNumber5 .. " / " .. randomNumber6 .. " = " 
+	 	
 
   	 end
 end
@@ -91,17 +98,16 @@ end
 local function HideWrong()
 	wrongObject.isVisible = false 
 	AskQuestion()
+end 
 
 	
 
 		-- function that decreases the lives
 local function DecreaseLives()
+end 
 	
 	if (secondsLeft == 0) then
 		lives = lives -1
-	
-
-	
 
 	if (lives == 3) then
 		heart1.isVisible = true
@@ -125,50 +131,58 @@ local function DecreaseLives()
 		heart1.isVisible = false
 		heart2.isVisible = false
 		heart3.isVisible = false
-
+	end 
+end
  -- call the function to ask a new question
- 	AskQuestion()
+ 	
 
 local function NumericFieldListener( event )
+  
+	-- when the answer is submitted (enter key is pressed) set user input to user's answer
+	userAnswer = tonumber(event.target.text)
 
-	-- User begins editing "numericField"
-	if ( event.phase == "began" ) then
+	-- if the users answer and the correct answer are the same:
+	if (userAnswer == correctAnswer) then
+		correctObject.isVisible = true
 
-		--clear text field
-		event.target.text = ""
-	end
-	
-	if (event.phase == "submitted") then
-	 
-
-
-		-- when the answer is submitted (enter key is pressed) set user input to user's answer
-		userAnswer = tonumber(event.target.text)
-
-		-- if the users answer and the correct answer are the same:
-		if (userAnswer == correctAnswer) then
-			correctObject.isVisible = true
+		-- 5 correct answers and you win the game, winGame image appears
 			
-			timer.performWithDelay(2000, HideCorrect)
-			points = points +1
-
-			correctSoundChannel = audio.play(correctSound)
-
-			-- For each answer you get correct your points increase
-			pointsTextObject.text = "points = " .. points 
 		
-			-- if the users answer and the correct answer are the same:
-		else 
-			-- call the funcion to decrease the lives
-			lives = lives -1
-			DecreaseLives()
-			wrongObject.isVisible = true			
-			timer.performWithDelay(2000, HideWrong)
-			wrongSoundChannel = audio.play(wrongSound)
+
+		timer.performWithDelay(2000, HideCorrect)
+		points = points +1
+
+		correctSoundChannel = audio.play(correctSound)
+
+		-- For each answer you get correct your points increase
+		pointsTextObject.text = "points = " .. points 
 		
+		-- if the users answer and the correct answer are the same:
+		-- call the funcion to decrease the lives
+		lives = lives -1
+		DecreaseLives()
+		wrongObject.isVisible = true			
+		timer.performWithDelay(2000, HideWrong)
+		wrongSoundChannel = audio.play(wrongSound)
+		
+		
+	-- WRONG
+	else
+		-- tells you "Incorrect" and the correct answer
+
+		-- Sound plays
+
+		--Loose a life
+
+		-- Timer resets
+
+		--loose all three lives GameOver Image appears
 		event.target.text = ""
-		if (correctAnswer .. correctAnswer) then
- 		 
+	
+	end 
+
+
+end 	
 
 local function UpdateTime()
 
@@ -184,21 +198,16 @@ local function UpdateTime()
 		-- reset the number of seconds left
 		secondsLeft = totalSeconds
 		lives = lives -1
-		DecreaseLives(lives) 
+		DecreaseLives() 
 	end
-end  
-
-
--- function that calls the timer
-local function StartTimer()
-
+end 
 -- create a countdown timer that loops infinitely
  	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
-end 
+
 
 -- create a points box make it visible to see
 pointsTextObject = display.newText(" points = " .. points, 300, 200, nil, 50 )
-pointsTextObject:setTextColor(150/255, 250/255, 150/255)
+pointsTextObject:setTextColor(250/255, 250/255, 200/255)
 
 ----------------------------------------------------------------------
 -- OBJECT CREATION
@@ -206,7 +215,7 @@ pointsTextObject:setTextColor(150/255, 250/255, 150/255)
 
 -- displays a question and sets the color 
 questionObject = display.newText( "", display.contentWidth/3, display.contentHeight/2, nil, 50 )
-questionObject:setTextColor(155/255, 42/255, 198/255)
+questionObject:setTextColor(155/255, 80/255, 198/255)
 
 -- create the correct text object and make it invisible
 correctObject = display.newText( "Correct!", display.contentWidth/2, display.contentHeight*2/3, nil, 50 )
@@ -214,7 +223,7 @@ correctObject:setTextColor(155/255, 42/255, 198/255)
 correctObject.isVisible = false
 
 wrongObject = display.newText( "Incorrect!", display.contentWidth/2, display.contentHeight*2/3, nil, 50 )
-wrongObject:setTextColor(155/255, 42/255, 198/255)
+wrongObject:setTextColor(155/255, 183/255, 255/255)
 wrongObject.isVisible = false
 
 clockText = display.newText(" Time Left = " .. secondsLeft, 412, 300, nil, 50)
@@ -250,8 +259,6 @@ numericField:addEventListener( "userInput", NumericFieldListener )
 
 -- call the function to ask the question
 AskQuestion()
-
-StartTimer()
 
 
 
