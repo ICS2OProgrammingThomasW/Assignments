@@ -19,19 +19,15 @@ local totalSeconds = 10
 local lives = 3
 local questionObject
 local x
-local points = 5
 local randomNumber1
 local randomNumber2 
 local randomNumber3 
 local randomNumber4 	
 local randomNumber5 
 local randomOperator
-
-
-
-
-
-
+local wrongObject
+local IncorrectObject
+local correctObject
 
 --------------------------------------------------------------------
 -- SOUNDS
@@ -164,19 +160,30 @@ local function NumericFieldListener( event )
 		wrongObject.isVisible = true			
 		timer.performWithDelay(2000, HideWrong)
 		wrongSoundChannel = audio.play(wrongSound)
-		
-		
+
+	-- Correct
+		correctObject.isVisible = true
 	-- WRONG
-	else
+	IncorrectObject.isVisible = false
 		-- tells you "Incorrect" and the correct answer
 
 		-- Sound plays
-
+		local wrongAnswer = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
+		local wrongAnswerChannel
+		
 		--Loose a life
-
+		lives = lives -1
+		DecreaseLives()
+		wrongObject.isVisible = true			
+		timer.performWithDelay(2000, HideWrong)
+		wrongSoundChannel = audio.play(wrongSound)
+		
+		
 		-- Timer resets
 
 		--loose all three lives GameOver Image appears
+		
+
 		event.target.text = ""
 	
 	end 
@@ -204,7 +211,6 @@ end
 -- create a countdown timer that loops infinitely
  	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
 
-
 -- create a points box make it visible to see
 pointsTextObject = display.newText(" points = " .. points, 300, 200, nil, 50 )
 pointsTextObject:setTextColor(250/255, 250/255, 200/255)
@@ -225,6 +231,7 @@ correctObject.isVisible = false
 wrongObject = display.newText( "Incorrect!", display.contentWidth/2, display.contentHeight*2/3, nil, 50 )
 wrongObject:setTextColor(155/255, 183/255, 255/255)
 wrongObject.isVisible = false
+
 
 clockText = display.newText(" Time Left = " .. secondsLeft, 412, 300, nil, 50)
 -- Function Calls 
