@@ -26,7 +26,7 @@ local randomNumber4
 local randomNumber5 
 local randomOperator
 local wrongObject
-local IncorrectObject
+local incorrectObject
 local correctObject
 
 --------------------------------------------------------------------
@@ -76,11 +76,16 @@ local  function AskQuestion()
  		correctAnswer = randomNumber3 * randomNumber4
 	 	questionObject.text = randomNumber3 .. " * " .. randomNumber4 .. " = " 
 	elseif (randomOperator == 5 or randomOperator == 6) then
+		
 		-- used from internet 
  		correctAnswer = math.floor(randomNumber5 / randomNumber6)
 	 	questionObject.text = randomNumber5 .. " / " .. randomNumber6 .. " = " 
 	 	
+		-- making the equation evoid Decimals
+		randomNumber1 = randomNumber2 - (randomNumber1 % randomNumber2)
 
+		-- making the equation equal
+		correctAnswer = randomNumber1 / randomNumber2
   	 end
 end
 
@@ -164,7 +169,8 @@ local function NumericFieldListener( event )
 	-- Correct
 		correctObject.isVisible = true
 	-- WRONG
-	IncorrectObject.isVisible = false
+		
+		incorrectObject.isVisible = true
 		-- tells you "Incorrect" and the correct answer
 
 		-- Sound plays
@@ -177,18 +183,15 @@ local function NumericFieldListener( event )
 		wrongObject.isVisible = true			
 		timer.performWithDelay(2000, HideWrong)
 		wrongSoundChannel = audio.play(wrongSound)
-		
-		
-		-- Timer resets
+	
 
 		--loose all three lives GameOver Image appears
+
 		
 
 		event.target.text = ""
 	
 	end 
-
-
 end 	
 
 local function UpdateTime()
@@ -197,7 +200,13 @@ local function UpdateTime()
 	secondsLeft = secondsLeft - 1
 
 
+if (secondsLeft == 0) then
+		-- reset the number of seconds left
+		secondsLeft = totalSeconds
+		lives = lives -1
+		DecreaseLives(lives)
 
+end 
 	-- display the number of seconds left in the clock object
 	clockText.text = secondsLeft .. ""
 	
@@ -264,7 +273,7 @@ numericField:addEventListener( "userInput", NumericFieldListener )
 -- FUNCTION CALLS 
 --------------------------------------------------------------------------
 
--- call the function to ask the question
+-- call the function to ask the question 
 AskQuestion()
 
 
