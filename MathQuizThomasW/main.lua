@@ -2,13 +2,13 @@
 -- Title: Math Quiz
 -- Name: Thomas Wehbi
 -- Course: ICS2O
--- Program: This program displays 3 hearts, i fyou get a question wrong you loose a life, if you run out of time you loose a life.
--- If you get three questions wrong a game over image displays. If you get 5 questions right you win the game and a you win Image
+-- Program: This program displays 3 hearts, if you get a question wrong you loose a life, if you run out of time you loose a life.
+-- If you get three questions wrong, a game over image displays. If you get 5 questions right you win the game and a you win Image
 -- displays.
+-----------------------------------------------------------------------------------------------------------------------------------
 
 -- hide the status bar
 display.setStatusBar(display.HiddenStatusBar)
-
 
 -- set the background color
 display.setDefault("background", 95/255, 70/255, 215/255)
@@ -18,7 +18,6 @@ local secondsLeft = 10
 local totalSeconds = 10
 local lives = 3
 local questionObject
-local x
 local randomNumber1
 local randomNumber2 
 local randomNumber3 
@@ -26,36 +25,50 @@ local randomNumber4
 local randomNumber5 
 local randomOperator
 local wrongObject
-local incorrectObject
 local correctObject
+local pointsTextObject
+local clockText
+local countDownTimer
 
 --------------------------------------------------------------------
 -- SOUNDS
 --------------------------------------------------------------------
 
 -- correctAnswer
-local correctAnswer = audio.loadSound("Sounds/correctAnswer.wav" ) -- setting the variable to a wav file
+local correctSound = audio.loadSound("Sounds/correctAnswer.wav" ) -- setting the variable to a wav file
 local correctAnswerChannel
 
 -- looseGame 
-local looseGame = audio.loadSound("Sounds/looseGame.mp3" ) -- setting the variable to an mp3 file
+local looseSound = audio.loadSound("Sounds/looseGame.mp3" ) -- setting the variable to an mp3 file
 local looseGameChannel
 
 -- winGame
-local winGame = audio.loadSound("Sounds/winGame.wav" ) -- setting the variable to a wav file
+local winGameSound = audio.loadSound("Sounds/winGame.wav" ) -- setting the variable to a wav file
 local winGameChannel
 
 -- wrongAnswer
-local wrongAnswer = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
-local wrongAnswerChannel
+local wrongSound = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
+local wrongSoundChannel
 
 ------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 ----------------------------------------------------------------------------------
 
+local function LoseGame()
+	gameOver.alpha = 1
+	pointsText.isVisible = false
+	looseGameChannel = audio.play(looseSound)
+end
+
+local function WinGame()
+	numericField.alpha = 0
+	youWin.alpha = 1 
+	pointsText.isVisible = false
+	winGameChannel = audio.play(winGameSound)
+end 
+
 local  function AskQuestion()
-	--generate 2 random numbers between a max. and a min. number
-	
+	--generate 2 random numbers between a max. and a min. number	
 	randomNumber1 = math.random(1,20)
 	randomNumber2 = math.random(1,20)
 	randomNumber3 = math.random(1,10)
@@ -66,8 +79,7 @@ local  function AskQuestion()
 
 	-- handle the case for addition
 	if (randomOperator == 1) then
-		--calculate the correct answer
-	   	correctAnswer = randomNumber1 + randomNumber2 
+	   	correctAnswer = randomNumber1 + randomNumber2 								-- calculate the correct answer
 	 	questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = " 
 	elseif (randomOperator == 2 and (randomNumber1 > randomNumber2)) then
  		correctAnswer = randomNumber1 - randomNumber2 
@@ -76,154 +88,117 @@ local  function AskQuestion()
  		correctAnswer = randomNumber3 * randomNumber4
 	 	questionObject.text = randomNumber3 .. " * " .. randomNumber4 .. " = " 
 	elseif (randomOperator == 5 or randomOperator == 6) then
-		
-		-- used from internet 
- 		correctAnswer = math.floor(randomNumber5 / randomNumber6)
+ 		correctAnswer = math.floor(randomNumber5 / randomNumber6) 					-- used from internet 
 	 	questionObject.text = randomNumber5 .. " / " .. randomNumber6 .. " = " 
-	 	
-		-- making the equation evoid Decimals
-		randomNumber1 = randomNumber2 - (randomNumber1 % randomNumber2)
-
-		-- making the equation equal
-		correctAnswer = randomNumber1 / randomNumber2
+		randomNumber1 = randomNumber2 - (randomNumber1 % randomNumber2)				-- making the equation evoid Decimals
+		correctAnswer = randomNumber1 / randomNumber2    							-- making the equation equal
   	 end
 end
 
-
 local function HideCorrect()
-	correctObject.isVisible = false
-	AskQuestion()
+		correctObject.isVisible = false
+		AskQuestion()
 end
 
-
 local function HideWrong()
-	wrongObject.isVisible = false 
-	AskQuestion()
+		wrongObject.isVisible = false 
+		AskQuestion()
 end 
 
+-- function that decreases the lives
+local function DecreaseLives()	
 	
+	lives = lives -1	
+	wrongSoundChannel = audio.play(wrongSound)
 
-		-- function that decreases the lives
-local function DecreaseLives()
-end 
-	
-	if (secondsLeft == 0) then
-		lives = lives -1
 
 	if (lives == 3) then
 		heart1.isVisible = true
 		heart2.isVisible = true
 		heart3.isVisible = true
-		
-
 	elseif (lives == 2) then
 		heart1.isVisible = false
 		heart2.isVisible = true
 		heart3.isVisible = true
-		
-	
 	elseif (lives == 1) then
 		heart1.isVisible = false
 		heart2.isVisible = false
 		heart3.isVisible = true
-		
-
 	elseif (lives == 0) then 
 		heart1.isVisible = false
 		heart2.isVisible = false
 		heart3.isVisible = false
+		totalSeconds = 0
+		numericField:removeSelf()
+		LoseGame();
 	end 
+
 end
+ 
  -- call the function to ask a new question
- 	
-
-local function NumericFieldListener( event )
-  
-	-- when the answer is submitted (enter key is pressed) set user input to user's answer
-	userAnswer = tonumber(event.target.text)
-
-	-- if the users answer and the correct answer are the same:
-	if (userAnswer == correctAnswer) then
-		correctObject.isVisible = true
-
-		-- 5 correct answers and you win the game, winGame image appears
+local function NumericFieldListener(event)
+		--user begind typing numericTextField
+	if(event.phase == "began") then 
+		event.target.text = ""					 		-- clear numericTextField
+	elseif (event.phase == "submitted") then
+		userAnswer = tonumber(event.target.text) 		-- submit the answer
 			
-		
-
-		timer.performWithDelay(2000, HideCorrect)
-		points = points +1
-
-		correctSoundChannel = audio.play(correctSound)
-
-		-- For each answer you get correct your points increase
-		pointsTextObject.text = "points = " .. points 
-		
-		-- if the users answer and the correct answer are the same:
-		-- call the funcion to decrease the lives
-		lives = lives -1
-		DecreaseLives()
-		wrongObject.isVisible = true			
-		timer.performWithDelay(2000, HideWrong)
-		wrongSoundChannel = audio.play(wrongSound)
-
-	-- Correct
-		correctObject.isVisible = true
-	-- WRONG
-		
-		incorrectObject.isVisible = true
-		-- tells you "Incorrect" and the correct answer
-
-		-- Sound plays
-		local wrongAnswer = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
-		local wrongAnswerChannel
-		
-		--Loose a life
-		lives = lives -1
-		DecreaseLives()
-		wrongObject.isVisible = true			
-		timer.performWithDelay(2000, HideWrong)
-		wrongSoundChannel = audio.play(wrongSound)
-	
-
-		--loose all three lives GameOver Image appears
-
-		
-
-		event.target.text = ""
-	
-	end 
-end 	
-
-local function UpdateTime()
-
-	-- decrement the number of seconds
-	secondsLeft = secondsLeft - 1
-
-
-if (secondsLeft == 0) then
-		-- reset the number of seconds left
+		-- reset timer
 		secondsLeft = totalSeconds
-		lives = lives -1
-		DecreaseLives(lives)
 
-end 
-	-- display the number of seconds left in the clock object
-	clockText.text = secondsLeft .. ""
-	
-	if (secondsLeft == 0) then
-		-- reset the number of seconds left
-		secondsLeft = totalSeconds
-		lives = lives -1
-		DecreaseLives() 
+		if( userAnswer == correctAnswer) then			-- user correct, answer correct
+			points = points +1								-- +1 points
+			pointsText.text = "Points : " ..points
+			correctObject.text = "Correct"
+			correctObject.isVisible = true					-- display correct answer
+			correctAnswerChannel = audio.play(correctSound) -- SOUND
+			if(points >= 5) then							-- winGame function
+				WinGame()									-- winGame
+			end
+			timer.performWithDelay(2000, HideCorrect)		-- delay
+			HideCorrect()
+
+		else
+
+			DecreaseLives()
+			wrongObject.text = "Incorrect. The answer is" .. correctAnswer	-- if answer is wrong corrcet answer displays
+			wrongObject.isVisible = true 									--Incorrect object is visible
+			wrongSoundChannel = audio.play(wrongSound)
+			timer.performWithDelay(2000, HideCorrect)		-- delay
+			HideWrong()
+
+			-- winGame function
+			if(lives == 0) then
+				LoseGame()
+				event.target.text = ""
+			end
+		end 
 	end
 end 
--- create a countdown timer that loops infinitely
- 	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
 
--- create a points box make it visible to see
-pointsTextObject = display.newText(" points = " .. points, 300, 200, nil, 50 )
-pointsTextObject:setTextColor(250/255, 250/255, 200/255)
 
+	
+local function UpdateTime()
+
+	-- display the number of seconds left in the clock object
+	secondsLeft = secondsLeft - 1
+
+	clockText.text = secondsLeft .. ""
+
+	if  (secondsLeft == 0) then
+		-- reset the number of seconds left
+		secondsLeft = totalSeconds
+		DecreaseLives()
+		AskQuestion()
+	end
+
+end
+
+local function StartTimer()
+	-- create a countdown timer that loops infinitely
+	countDownTimer = timer.performWithDelay( 1000, UpdateTime, 0)
+end
+	 
 ----------------------------------------------------------------------
 -- OBJECT CREATION
 --------------------------------------------------------------------------
@@ -242,13 +217,21 @@ wrongObject:setTextColor(155/255, 183/255, 255/255)
 wrongObject.isVisible = false
 
 
-clockText = display.newText(" Time Left = " .. secondsLeft, 412, 300, nil, 50)
--- Function Calls 
+clockText = display.newText( secondsLeft, 412, 300, nil, 50)
+
+
+pointsText = display.newText( "Points : " .. points, 112, 100, nil, 50)
+
 
 gameOver = display.newImageRect("Images/gameOver.png", 800 ,800)
 gameOver.x = display.contentCenterX
 gameOver.y = display.contentCenterY
 gameOver.alpha = 0
+
+youWin = display.newImageRect("Images/YouWin.png", 800 ,800)
+youWin.x = display.contentCenterX
+youWin.y = display.contentCenterY
+youWin.alpha = 0
 
 -- create the lives to display on the screen 
 heart1 = display.newImageRect("Images/heart.png", 100, 100)
@@ -274,7 +257,8 @@ numericField:addEventListener( "userInput", NumericFieldListener )
 --------------------------------------------------------------------------
 
 -- call the function to ask the question 
-AskQuestion()
 
+StartTimer()
+AskQuestion()
 
 
