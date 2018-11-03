@@ -130,7 +130,7 @@ local function DecreaseLives()
 		heart3.isVisible = false
 		totalSeconds = 0
 		numericField:removeSelf()
-		LoseGame();
+		LoseGame()
 	end 
 
 end
@@ -138,8 +138,7 @@ end
  -- call the function to ask a new question
 local function NumericFieldListener(event)
 		--user begind typing numericTextField
-	if(event.phase == "began") then 
-		event.target.text = ""					 		-- clear numericTextField
+	if(event.phase == "began") then 					 		-- clear numericTextField
 	elseif (event.phase == "submitted") then
 		userAnswer = tonumber(event.target.text) 		-- submit the answer
 			
@@ -156,21 +155,20 @@ local function NumericFieldListener(event)
 				WinGame()									-- winGame
 			end
 			timer.performWithDelay(2000, HideCorrect)		-- delay
-			HideCorrect()
+			HideWrong()
 
 		else
 
 			DecreaseLives()
-			wrongObject.text = "Incorrect. The answer is" .. correctAnswer	-- if answer is wrong corrcet answer displays
+			wrongObject.text = "Incorrect. The answer is " .. correctAnswer	-- if answer is wrong corrcet answer displays
 			wrongObject.isVisible = true 									--Incorrect object is visible
 			wrongSoundChannel = audio.play(wrongSound)
 			timer.performWithDelay(2000, HideCorrect)		-- delay
-			HideWrong()
+			HideCorrect()
 
 			-- winGame function
 			if(lives == 0) then
 				LoseGame()
-				event.target.text = ""
 			end
 		end 
 	end
@@ -189,7 +187,7 @@ local function UpdateTime()
 		-- reset the number of seconds left
 		secondsLeft = totalSeconds
 		DecreaseLives()
-		AskQuestion()
+		
 	end
 
 end
