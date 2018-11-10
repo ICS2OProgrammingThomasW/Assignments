@@ -13,20 +13,23 @@ display.setStatusBar(display.HiddenStatusBar)
 -- set the background color
 display.setDefault("background", 95/255, 70/255, 215/255)
 
+-- setting game stats
 local points = 0
 local secondsLeft = 10
 local totalSeconds = 10
 local lives = 3
-local questionObject
+
+-- randomNumber1 and randomNumber2 are used for all questions
 local randomNumber1
-local randomNumber2 
-local randomNumber3 
-local randomNumber4 	
-local randomNumber5 
+local randomNumber2 	
+
+-- randomOperator is used to determine the operation
 local randomOperator
+
+-- game ojbects 
+local questionObject
 local wrongObject
 local correctObject
-local pointsTextObject
 local clockText
 local countDownTimer
 
@@ -38,6 +41,10 @@ local countDownTimer
 local correctSound = audio.loadSound("Sounds/correctAnswer.wav" ) -- setting the variable to a wav file
 local correctAnswerChannel
 
+-- wrongAnswer
+local wrongSound = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
+local wrongSoundChannel
+
 -- looseGame 
 local looseSound = audio.loadSound("Sounds/looseGame.mp3" ) -- setting the variable to an mp3 file
 local looseGameChannel
@@ -46,71 +53,110 @@ local looseGameChannel
 local winGameSound = audio.loadSound("Sounds/winGame.wav" ) -- setting the variable to a wav file
 local winGameChannel
 
--- wrongAnswer
-local wrongSound = audio.loadSound("Sounds/wrongAnswer.wav" ) -- setting the variable to a wav file
-local wrongSoundChannel
 
 ------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 ----------------------------------------------------------------------------------
 
-local function LoseGame()
-	gameOver.alpha = 1
+local function hideAll()
+	-- remove all texts from screen
+	numericField.alpha = 0
 	pointsText.isVisible = false
+	questionObject.isVisible = false
+	countDownTimer.isVisible = false
+	heart1.isVisible = false
+	heart2.isVisible = false
+	heart3.isVisible = false
+	correctObject.isVisible = false
+	wrongObject.isVisible = false
+end
+
+local function LoseGame()
+	hideAll()
+	gameOver.alpha = 1
 	looseGameChannel = audio.play(looseSound)
 end
 
 local function WinGame()
-	numericField.alpha = 0
+	hideAll()
 	youWin.alpha = 1 
-	pointsText.isVisible = false
 	winGameChannel = audio.play(winGameSound)
 end 
 
-local  function AskQuestion()
-	--generate 2 random numbers between a max. and a min. number	
-	randomNumber1 = math.random(1,20)
-	randomNumber2 = math.random(1,20)
-	randomNumber3 = math.random(1,10)
-	randomNumber4 = math.random(1,10)		
-	randomNumber5 = math.random(1,100)
-	randomNumber6 = math.random(1,100)	
-	randomOperator = math.random(1,7)
+local  function AskQuestion()	
+	-- generate a random number for operator
+	--   1 = +
+	--   2 = -
+	--   3 = *
+	--   4 = /
+	randomOperator = math.random(1,4)
 
 	-- handle the case for addition
 	if (randomOperator == 1) then
-	   	correctAnswer = randomNumber1 + randomNumber2 								-- calculate the correct answer
+
+		--generate 2 random numbers between 1 and 20	
+		randomNumber1 = math.random(1,20)
+		randomNumber2 = math.random(1,20)
+
+	   	correctAnswer = randomNumber1 + randomNumber2
 	 	questionObject.text = randomNumber1 .. " + " .. randomNumber2 .. " = " 
-	elseif (randomOperator == 2 and (randomNumber1 > randomNumber2)) then
- 		correctAnswer = randomNumber1 - randomNumber2 
-		questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = " 
-	elseif (randomOperator == 3 or randomOperator == 4) then
- 		correctAnswer = randomNumber3 * randomNumber4
-	 	questionObject.text = randomNumber3 .. " * " .. randomNumber4 .. " = " 
-	elseif (randomOperator == 5 or randomOperator == 6) then
- 		correctAnswer = math.floor(randomNumber5 / randomNumber6) 					-- used from internet 
-	 	questionObject.text = randomNumber5 .. " / " .. randomNumber6 .. " = " 
-		randomNumber1 = randomNumber2 - (randomNumber1 % randomNumber2)				-- making the equation evoid Decimals
-		correctAnswer = randomNumber1 / randomNumber2    							-- making the equation equal
+	
+	-- handle the case for subtraction, always substract smaller number from bigger number
+	elseif (randomOperator == 2) then		
+		--generate 2 random numbers between 1 and 20	
+		randomNumber1 = math.random(1,20)
+		randomNumber2 = math.random(1,20)
+
+		-- if randomNumber1 is greater than randomNumber2 then subtract randomNumber2 from randomNumber1
+		if (randomNumber1 > randomNumber2) then
+			correctAnswer = randomNumber1 - randomNumber2 
+			questionObject.text = randomNumber1 .. " - " .. randomNumber2 .. " = " 
+		-- else randomNumber2 is greater than randomNumber1 therefore subtract randomNumber1 from randomNumber2
+		else
+			correctAnswer = randomNumber2 - randomNumber1 
+			questionObject.text = randomNumber2 .. " - " .. randomNumber1 .. " = " 
+		end
+ 	
+ 	--handle the case for multiplication	
+	elseif (randomOperator == 3) then
+
+		--generate 2 random numbers between 1 and 10	
+		randomNumber1 = math.random(1,10)
+		randomNumber2 = math.random(1,10)
+
+ 		correctAnswer = randomNumber1 * randomNumber2
+	 	questionObject.text = randomNumber1 .. " * " .. randomNumber2.. " = " 
+	
+
+	-- handle the case for division, round to 1 decimal
+	elseif (randomOperator == 4) then		
+		--generate 2 random numbers between 1 and 100	
+		randomNumber1 = math.random(1,100)
+		randomNumber2 = math.random(1,100)
+
+		correctAnswer = randomNumber1 / randomNumber2
+
+		-- round to 1 decimal by * by 10, then flooring before diving by 10, must add 0.5 before flooring to round
+	 	correctAnswer = math.floor(correctAnswer * 10 + 0.5) / 10
+		questionObject.text = randomNumber1 .. " / " .. randomNumber2 .. " = " 
   	 end
+
 end
 
 local function HideCorrect()
-		correctObject.isVisible = false
-		AskQuestion()
+	correctObject.isVisible = false
 end
 
 local function HideWrong()
-		wrongObject.isVisible = false 
-		AskQuestion()
-end 
+	wrongObject.isVisible = false
+end
+
 
 -- function that decreases the lives
 local function DecreaseLives()	
 	
 	lives = lives -1	
 	wrongSoundChannel = audio.play(wrongSound)
-
 
 	if (lives == 3) then
 		heart1.isVisible = true
@@ -128,8 +174,6 @@ local function DecreaseLives()
 		heart1.isVisible = false
 		heart2.isVisible = false
 		heart3.isVisible = false
-		totalSeconds = 0
-		numericField:removeSelf()
 		LoseGame()
 	end 
 
@@ -141,9 +185,8 @@ local function NumericFieldListener(event)
 	if(event.phase == "began") then 					 		-- clear numericTextField
 	elseif (event.phase == "submitted") then
 		userAnswer = tonumber(event.target.text) 		-- submit the answer
-			
-		-- reset timer
-		secondsLeft = totalSeconds
+		secondsLeft = totalSeconds						-- reset timer
+		numericField.text = ""							-- reset numericField
 
 		if( userAnswer == correctAnswer) then			-- user correct, answer correct
 			points = points +1								-- +1 points
@@ -154,26 +197,22 @@ local function NumericFieldListener(event)
 			if(points >= 5) then							-- winGame function
 				WinGame()									-- winGame
 			end
-			timer.performWithDelay(2000, HideCorrect)		-- delay
-			HideWrong()
+		
+		timer.performWithDelay(2000, HideCorrect)		-- clear correct answer after 2 seconds delay
 
 		else
-
 			DecreaseLives()
 			wrongObject.text = "Incorrect. The answer is " .. correctAnswer	-- if answer is wrong corrcet answer displays
 			wrongObject.isVisible = true 									--Incorrect object is visible
 			wrongSoundChannel = audio.play(wrongSound)
-			timer.performWithDelay(2000, HideCorrect)		-- delay
-			HideCorrect()
+			
+			timer.performWithDelay(2000, HideWrong)		-- clear wrong answer after 2 seconds delay
 
-			-- winGame function
-			if(lives == 0) then
-				LoseGame()
-			end
 		end 
+
+		AskQuestion()
 	end
 end 
-
 
 	
 local function UpdateTime()
