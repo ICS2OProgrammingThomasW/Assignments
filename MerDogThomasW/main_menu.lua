@@ -36,14 +36,47 @@ local bkg_image
 local playButton
 local creditsButton
 local instructionsButton
+local bkgMusic = audio.loadSound("Sounds/level1Music.wav")
+local bkgMusicChannel
+local muteButton
+local unmuteButton
 
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 -----------------------------------------------------------------------------------------
 
+-- unmuteButton = display.newImage("Images/umute.png")
+-- unmuteButton.x = display.contentCenterX
+-- unmuteButton.y = display.contentCenterY
+-- unmuteButton.isVisible = false
+
+
+-- muteButton = display.newImage("Images/mute.png")
+-- muteButton.x = display.contentCenterX
+-- muteButton.y = display.contentCenterY
+
+-- muteButton:SetScript('OnClick', function()
+--     unmuteButton.isVisible = true
+
+-- end)
+
 -- Creating Transition Function to Credits Page
 local function CreditsTransition( )       
     composer.gotoScene( "credits_screen", {effect = "flipFadeOutIn", time = 500})
+end 
+
+
+local function MuteTransition( )
+    unmuteButton.isVisible = true
+    muteButton.isVisible = false
+    audio.stop(bkgMusicChannel)
+end 
+
+
+local function UnMuteTransition( )
+    muteButton.isVisible = true
+    unmuteButton.isVisible = false
+    bkgMusicChannel = audio.play(bkgMusic)
 end 
 
 -----------------------------------------------------------------------------------------
@@ -52,6 +85,13 @@ end
 local function Level1ScreenTransition( )
     composer.gotoScene( "level1_screen", {effect = "zoomInOutFade", time = 1000})
 end    
+
+
+------------------------------------------------------------------------------------------
+
+-- local function muteButton()
+--     audioStop = audio.stop()
+
 
 -- INSERT LOCAL FUNCTION DEFINITION THAT GOES TO INSTRUCTIONS SCREEN 
 
@@ -70,7 +110,7 @@ function scene:create( event )
     -----------------------------------------------------------------------------------------
 
     -- Insert the background image and set it to the center of the screen
-    bkg_image = display.newImage("Images/main_menu.png")
+    bkg_image = display.newImage("Images/red_blk.png")
     bkg_image.x = display.contentCenterX
     bkg_image.y = display.contentCenterY
     bkg_image.width = display.contentWidth
@@ -82,6 +122,7 @@ function scene:create( event )
 
     -- Send the background image to the back layer so all other objects can be on top
     bkg_image:toBack()
+    bkgMusicChannel = audio.play(bkgMusic)
 
     -----------------------------------------------------------------------------------------
     -- BUTTON WIDGETS
@@ -89,7 +130,7 @@ function scene:create( event )
 
     -- Creating Play Button
     playButton = widget.newButton( 
-        {   
+       {   
             -- Set its position on the screen relative to the screen size
             x = display.contentWidth/2,
             y = display.contentHeight*7/8,
@@ -140,14 +181,66 @@ function scene:create( event )
             -- When the button is released, call the Credits transition function
             onRelease = CreditsTransition
         } ) 
+
+        creditsButton = widget.newButton( 
+        {
+            -- Set its position on the screen relative to the screen size
+            x = display.contentWidth*1/8,
+            y = display.contentHeight*7/8,
+            width = 200,
+            height = 200,
+
+            -- Insert the images here
+            defaultFile = "Images/CreditsUnpressedThomasW.png",
+            overFile = "Images/CreditsPressedThomasW.png",
+
+            -- When the button is released, call the Credits transition function
+            onRelease = CreditsTransition
+        } ) 
     -- ADD INSTRUCTIONS BUTTON WIDGET
 
     -----------------------------------------------------------------------------------------
+         -- Creating Credits Button
+    muteButton = widget.newButton( 
+        {
+            -- Set its position on the screen relative to the screen size
+            x = display.contentWidth*2/8,
+            y = display.contentHeight*5/8,
+            width = 200,
+            height = 200,
+
+            -- Insert the images here
+            defaultFile = "Images/mute.png",
+            -- overFile = "Images/mute.png",
+            -- overFile.isVisible = false 
+
+            onRelease = MuteTransition
+        } ) 
+     
+     unmuteButton = widget.newButton( 
+        {
+            -- Set its position on the screen relative to the screen size
+            x = display.contentWidth*2/8,
+            y = display.contentHeight*5/8,
+            width = 200,
+            height = 200,
+
+            -- Insert the images here
+            defaultFile = "Images/umute.png",
+            -- overFile = "Images/mute.png",
+            -- overFile.isVisible = false 
+            onRelease = UnMuteTransition
+
+        } ) 
+    ---------------------------------------------------------------------------------------
 
     -- Associating button widgets with this scene
+    unmuteButton.isVisible = false
     sceneGroup:insert( playButton )
     sceneGroup:insert( creditsButton )
     sceneGroup:insert( instructionsButton )
+    sceneGroup:insert( muteButton)
+    sceneGroup:insert( unmuteButton)
     
     -- INSERT INSTRUCTIONS BUTTON INTO SCENE GROUP
 
