@@ -182,21 +182,7 @@ function scene:create( event )
             onRelease = CreditsTransition
         } ) 
 
-        creditsButton = widget.newButton( 
-        {
-            -- Set its position on the screen relative to the screen size
-            x = display.contentWidth*1/8,
-            y = display.contentHeight*7/8,
-            width = 200,
-            height = 200,
 
-            -- Insert the images here
-            defaultFile = "Images/CreditsUnpressedThomasW.png",
-            overFile = "Images/CreditsPressedThomasW.png",
-
-            -- When the button is released, call the Credits transition function
-            onRelease = CreditsTransition
-        } ) 
     -- ADD INSTRUCTIONS BUTTON WIDGET
 
     -----------------------------------------------------------------------------------------
@@ -235,7 +221,7 @@ function scene:create( event )
     ---------------------------------------------------------------------------------------
 
     -- Associating button widgets with this scene
-    unmuteButton.isVisible = false
+    unmuteButton.isVisible = falser
     sceneGroup:insert( playButton )
     sceneGroup:insert( creditsButton )
     sceneGroup:insert( instructionsButton )
