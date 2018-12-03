@@ -27,7 +27,6 @@ sceneName = "main_menu"
 
 -- Creating Scene Object
 local scene = composer.newScene( sceneName )
-
 -----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
@@ -44,21 +43,6 @@ local unmuteButton
 -----------------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 -----------------------------------------------------------------------------------------
-
--- unmuteButton = display.newImage("Images/umute.png")
--- unmuteButton.x = display.contentCenterX
--- unmuteButton.y = display.contentCenterY
--- unmuteButton.isVisible = false
-
-
--- muteButton = display.newImage("Images/mute.png")
--- muteButton.x = display.contentCenterX
--- muteButton.y = display.contentCenterY
-
--- muteButton:SetScript('OnClick', function()
---     unmuteButton.isVisible = true
-
--- end)
 
 -- Creating Transition Function to Credits Page
 local function CreditsTransition( )       
@@ -182,8 +166,6 @@ function scene:create( event )
             onRelease = CreditsTransition
         } ) 
 
-
-    -- ADD INSTRUCTIONS BUTTON WIDGET
 
     -----------------------------------------------------------------------------------------
          -- Creating Credits Button

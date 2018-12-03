@@ -13,6 +13,7 @@
 local composer = require( "composer" )
 local widget = require( "widget" )
 
+
 -----------------------------------------------------------------------------------------
 
 -- Naming Scene
@@ -23,7 +24,6 @@ sceneName = "level1_screen"
 -- Creating Scene Object
 local scene = composer.newScene( sceneName )
 
-creditsButton.isVisible = false
 -----------------------------------------------------------------------------------------
 -- LOCAL VARIABLES
 -----------------------------------------------------------------------------------------
